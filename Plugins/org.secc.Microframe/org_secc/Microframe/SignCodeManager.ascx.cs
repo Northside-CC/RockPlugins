@@ -133,7 +133,7 @@ namespace RockWeb.Plugins.org_secc.Microframe
                     codes.Remove( code );
                     signCategory.Codes = string.Join( ",", codes );
                     rockContext.SaveChanges();
-                    UpdateSigns( signCategoryId );
+                    UpdateSigns( signCategoryId, 'R' );
                 }
                 ShowCategory( signCategoryId );
                 BindGrid();
@@ -209,7 +209,7 @@ namespace RockWeb.Plugins.org_secc.Microframe
                     codes.Add( code );
                     signCategory.Codes = string.Join( ",", codes );
                     rockContext.SaveChanges();
-                    UpdateSigns( signCategoryId );
+                    UpdateSigns( signCategoryId, 'A' );
                 }
                 ShowCategory( signCategoryId );
                 BindGrid();
@@ -221,9 +221,9 @@ namespace RockWeb.Plugins.org_secc.Microframe
             }
         }
 
-        private void UpdateSigns(int signCategoryId)
+        private void UpdateSigns(int signCategoryId, char action)
         {
-            SignUtilities.UpdateSignCategorySigns( signCategoryId );
+            SignUtilities.UpdateSignCategorySigns( signCategoryId, action );
         }
     }
 }

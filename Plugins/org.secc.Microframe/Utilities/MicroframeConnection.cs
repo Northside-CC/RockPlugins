@@ -41,6 +41,22 @@ namespace org.secc.Microframe.Utilities
         private IPEndPoint _remoteEP;
         private byte[] _PIN;
 
+        public byte[] addByteToArray(byte[] bArray, byte newByte, char position)
+        {
+            byte[] newArray = new byte[bArray.Length + 1];
+
+            if (position == 'b') {
+                bArray.CopyTo(newArray, 1);
+                newArray[0] = newByte;
+            } else if (position == 'l') {
+                bArray.CopyTo(newArray, 0);
+                int length = newArray.Length - 1;
+                newArray[length] = newByte;
+            }
+
+            return newArray;
+        }
+
         public MicroframeConnection( string IP, int port, string PIN )
         {
             IPAddress ipAddress = IPAddress.Parse( IP );
@@ -64,8 +80,47 @@ namespace org.secc.Microframe.Utilities
             return new byte[2] { byteA, byteB };
         }
 
-        public void UpdateMessages( List<string> codes )
+        public void UpdateMessages( List<string> codes, char action )
         {
+          // Need to send "S+ 000" on "A" and "S-" on "R" via UDP in this function
+          if (action == 'A') {
+            try{
+              System.Byte[] sendBytes = System.Text.Encoding.Default.GetBytes("S+ " + codes.First());
+              sendBytes = addByteToArray(sendBytes,  0x00, 'b');
+              sendBytes = addByteToArray(sendBytes,  0x00, 'b');
+              sendBytes = addByteToArray(sendBytes,  0x00, 'l');
+
+               System.Net.Sockets.UdpClient udpClientB = new System.Net.Sockets.UdpClient();
+               udpClientB.Send(sendBytes, sendBytes.Length, _remoteEP.Address, _remoteEP.Port);
+               udpClientB.Close();
+
+                return "success: " + System.BitConverter.ToString(sendBytes).Replace("-","");
+
+            }
+            catch (System.Exception e ) {
+                Console.WriteLine( e.ToString() );
+                return "fail: " + e.ToString();
+            }
+          else if (action == 'R') {
+            try{
+              System.Byte[] sendBytes = System.Text.Encoding.Default.GetBytes("OCA");
+              sendBytes = addByteToArray(sendBytes,  0x00, 'b');
+              sendBytes = addByteToArray(sendBytes,  0x00, 'b');
+              sendBytes = addByteToArray(sendBytes,  0x00, 'l');
+
+               System.Net.Sockets.UdpClient udpClientB = new System.Net.Sockets.UdpClient();
+               udpClientB.Send(sendBytes, sendBytes.Length, _remoteEP.Address, _remoteEP.Port);
+               udpClientB.Close();
+
+                return "success: " + System.BitConverter.ToString(sendBytes).Replace("-","");
+
+            }
+            catch (System.Exception e ) {
+                Console.WriteLine( e.ToString() );
+                return "fail: " + e.ToString();
+            }
+          }
+            /*
             try
             {
                 StateObject state = new StateObject();
@@ -80,7 +135,7 @@ namespace org.secc.Microframe.Utilities
             {
                 Console.WriteLine( e.ToString() );
             }
-
+            */
         }
 
         private static void Connect( StateObject state )

@@ -23,7 +23,7 @@ namespace org.secc.Microframe.Utilities
 {
     public class SignUtilities
     {
-        public static void UpdateSignCategorySigns( int signCategoryId )
+        public static void UpdateSignCategorySigns( int signCategoryId, char action )
         {
             using ( RockContext rockContext = new RockContext() )
             {
@@ -47,13 +47,13 @@ namespace org.secc.Microframe.Utilities
                                 );
                         }
                         MicroframeConnection signConnection = new MicroframeConnection( sign.IPAddress, sign.Port.AsIntegerOrNull() ?? 9107, sign.PIN );
-                        signConnection.UpdateMessages( codes );
+                        signConnection.UpdateMessages( codes, action );
                     }
                 }
             }
         }
 
-        public static void UpdateAllSigns()
+        public static void UpdateAllSigns(char action)
         {
             using ( RockContext rockContext = new RockContext() )
             {
@@ -75,7 +75,7 @@ namespace org.secc.Microframe.Utilities
                             );
                     }
                     MicroframeConnection signConnection = new MicroframeConnection( sign.IPAddress, sign.Port.AsIntegerOrNull() ?? 9107, sign.PIN );
-                    signConnection.UpdateMessages( codes );
+                    signConnection.UpdateMessages( codes, action );
                 }
             }
         }
